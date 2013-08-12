@@ -1,22 +1,33 @@
 var expect = require('expect.js')
+  , helpers = require('./helpers')
   , sqlbox = require('../lib/sqlbox');
 
 describe('sqlbox model', function () {
 
   var Person;
 
-  beforeEach(function () {
-    sqlbox.createDatabase(function (pg) {
-      return new pg.Client('postgres://localhost/ray');
+  beforeEach(function (done) {
+    sqlbox.createClient(function (pg) {
+      return new pg.Client('postgres://localhost/' + (process.env.DATABASE_NAME || process.env.USER));
     });
 
     Person = sqlbox.create({
-      tableName: 'people'
+      tableName: 'people',
+
+      columns: [
+        {name: 'name', type: 'string'},
+        {name: 'age', type: 'integer'}
+      ]
     });
+
+    helpers.createPeopleTable(sqlbox.clients.default, done);
   });
 
-  afterEach(function () {
-    sqlbox.removeDatabase();
+  afterEach(function (done) {
+    helpers.dropPeopleTable(sqlbox.clients.default, function () {
+      sqlbox.removeClient();
+      done();
+    });
   });
 
   describe('#get', function (done) {
@@ -66,4 +77,22 @@ describe('sqlbox model', function () {
       });
     });
   }); //#mget
+
+  describe('#save', function (done) {
+    it('should save a new object', function (done) {
+      Person.save({name: 'Jim'}, function (err, person) {
+        console.log(err);
+        console.log(person);
+        done();
+      });
+    });
+
+    it('should update and existing object', function (done) {
+      Person.save({id: 1, revision: 1}, function (err, person) {
+        console.log(err);
+        console.log(person);
+        done();
+      });
+    });
+  });
 });
