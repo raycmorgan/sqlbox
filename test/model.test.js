@@ -22,8 +22,12 @@ describe('sqlbox model', function () {
       ],
 
       // logQueries: true
-      validate: function (person, v) {
-        v.check(person.age, 'Age must be provided').isInt();
+      // validate: function (person, v) {
+      //   v.check(person.age, 'Age must be provided').isInt();
+      // },
+
+      validations: {
+        age: ['isInt', 'notNull']
       },
 
       hooks: {
@@ -137,6 +141,14 @@ describe('sqlbox model', function () {
         expect(err).to.be.an(Error);
         expect(err.code).to.be(403);
         expect(err.validationErrors.length).to.be(1);
+
+        expect(err.validationErrors[0]).to.eql({
+          key: 'age',
+          value: undefined,
+          expected: ['isInt', 'notNull'],
+          failed: ['isInt', 'notNull']
+        });
+
         done();
       });
     });
