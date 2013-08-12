@@ -12,7 +12,7 @@ describe('sqlbox model', function () {
     });
 
     Person = sqlbox.create({
-      tableName: 'people',
+      tableName: 'sqlbox_test_people',
 
       columns: [
         {name: 'name', type: 'string'},
@@ -262,7 +262,7 @@ describe('sqlbox model', function () {
 
       Person.modify(person.id, opts, function (dbPerson) {
         tries++;
-        
+
         // This forces a retry, like a concurrent update keeps happening before
         // the fetch/mutate/save of modify happens.
         dbPerson.age++;
@@ -277,4 +277,119 @@ describe('sqlbox model', function () {
       });
     });
   }); // #modify
+
+  describe('#first', function () {
+    var savedPerson;
+
+    beforeEach(function (done) {
+      Person.save({name: 'Tom', age: 32}, function () {});
+      Person.save({name: 'Frank', age: 32}, function () {});
+      Person.save({name: 'Jim', age: 25}, function (err, saved) {
+        if (err) {
+          return done(err);
+        }
+
+        savedPerson = saved;
+        done();
+      });
+    });
+
+    it('should find the first person that matches', function (done) {
+      Person.first({age: 32}, function (err, person) {
+        expect(err).to.be(null);
+        expect(person.name).to.be('Tom');
+        done();
+      });
+    });
+
+    it('should find one by multiple fields', function (done) {
+      Person.first({age: 25, name: 'Jim'}, function (err, person) {
+        expect(err).to.be(null);
+        expect(person).to.eql(savedPerson);
+        done();
+      });
+    });
+
+    it('should return a 404 error if nothing found', function (done) {
+      Person.first({age: 40}, function (err, person) {
+        expect(err).to.be.an(Error);
+        expect(err.message).to.be('404');
+        expect(person).to.be(undefined);
+        done();
+      });
+    });
+  });
+
+  describe('#all', function () {
+    var savedPerson;
+
+    beforeEach(function (done) {
+      Person.save({name: 'Tom', age: 32}, function () {});
+      Person.save({name: 'Frank', age: 32}, function () {});
+      Person.save({name: 'Jim', age: 25}, function (err, saved) {
+        if (err) {
+          return done(err);
+        }
+
+        savedPerson = saved;
+        done();
+      });
+    });
+
+    it('should find people that match a single field', function (done) {
+      Person.all({age: 32}, function (err, people) {
+        expect(err).to.be(null);
+        expect(people.length).to.be(2);
+        done();
+      });
+    });
+
+    it('should find people that match multiple fields', function (done) {
+      Person.all({age: 25, name: 'Jim'}, function (err, people) {
+        expect(err).to.be(null);
+        expect(people.length).to.be(1);
+        expect(people[0]).to.eql(savedPerson);
+        done();
+      });
+    });
+
+    it('should pass an empty array when nothing found', function (done) {
+      Person.all({age: 40}, function (err, people) {
+        expect(err).to.be(null);
+        expect(people.length).to.be(0);
+        done();
+      });
+    });
+
+    it('should be able to be sorted', function (done) {
+      var idDesc = function (t) {
+        return t.id.desc;
+      }
+
+      Person.all({age: 32}, {order: idDesc}, function (err, people) {
+        expect(err).to.be(null);
+        expect(people[0].name).to.be('Frank');
+        expect(people[1].name).to.be('Tom');
+        done();
+      });
+    });
+  }); // #all
+
+  describe('#query', function () {
+    beforeEach(function (done) {
+      Person.save({name: 'Tom', age: 32}, function () {});
+      Person.save({name: 'Frank', age: 32}, function () {});
+      Person.save({name: 'Jim', age: 25}, done);
+    });
+
+    it('should be able to query rows', function (done) {
+      Person.query(function (t) {
+        return t.where({age: 32});
+      }, function (err, people) {
+        expect(err).to.be(null);
+        expect(people.length).to.be(2);
+        done();
+      });
+    });
+  }); // #query
 });

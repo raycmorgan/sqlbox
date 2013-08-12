@@ -1,5 +1,5 @@
 function createPeopleTable(pg, callback) {
-  pg.query('CREATE TEMP TABLE people (' +
+  pg.query('CREATE TEMP TABLE sqlbox_test_people (' +
     'id SERIAL PRIMARY KEY,' +
     'name VARCHAR,' +
     'age INTEGER,' +
@@ -11,7 +11,7 @@ function createPeopleTable(pg, callback) {
 }
 
 function dropPeopleTable(pg, callback) {
-  pg.query('DROP TABLE IF EXISTS people;', callback);
+  pg.query('DROP TABLE IF EXISTS sqlbox_test_people;', callback);
 }
 
 
