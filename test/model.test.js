@@ -17,12 +17,21 @@ describe('sqlbox model', function () {
       columns: [
         {name: 'name', type: 'string'},
         {name: 'age', type: 'integer'},
-        {name: 'accountId', type: 'integer'}
+        {name: 'accountId', type: 'integer'},
+        {name: 'hashedPassword', type: 'string'}
       ],
 
       // logQueries: true
       validate: function (person, v) {
         v.check(person.age, 'Age must be provided').isInt();
+      },
+
+      hooks: {
+        beforeSave: function (person) {
+          if (person.password === 'foo') {
+            person.hashedPassword = 'bar';
+          }
+        }
       }
     });
 
@@ -126,8 +135,17 @@ describe('sqlbox model', function () {
     it('should pass 403 error on validation error', function (done) {
       Person.save({name: 'Jim'}, function (err, person) {
         expect(err).to.be.an(Error);
-        expect(err.message).to.be('403');
+        expect(err.code).to.be(403);
         expect(err.validationErrors.length).to.be(1);
+        done();
+      });
+    });
+
+    it('should run the beforeSave hook', function (done) {
+      Person.save({name: 'Jim', age: 25, password: 'foo'}, function (err, person) {
+        expect(err).to.be(null);
+        expect(person.hashedPassword).to.be('bar');
+        expect(person.password).to.be(undefined);
         done();
       });
     });
@@ -164,7 +182,7 @@ describe('sqlbox model', function () {
 
       Person.save(person, function (err, updatedPerson) {
         expect(err).to.be.an(Error);
-        expect(err.message).to.be('409');
+        expect(err.code).to.be(409);
         expect(updatedPerson).to.be(undefined);
         done();
       });
@@ -196,7 +214,7 @@ describe('sqlbox model', function () {
     it('should return a 404 error when row not found', function (done) {
       Person.remove(person.id+1, function (err, result) {
         expect(err).to.be.an(Error);
-        expect(err.message).to.be('404');
+        expect(err.code).to.be(404);
         expect(result).to.be(undefined);
         done();
       });
@@ -261,7 +279,7 @@ describe('sqlbox model', function () {
       Person.modify(person.id, opts, function (dbPerson) {
         dbPerson.age = 26;
       }, function (err, updatedPerson) {
-        expect(err.message).to.be('409');
+        expect(err.code).to.be(409);
         expect(updatedPerson).to.be(undefined);
         done();
       });
@@ -284,7 +302,7 @@ describe('sqlbox model', function () {
 
         dbPerson.age = 26;
       }, function (err, updatedPerson) {
-        expect(err.message).to.be('503');
+        expect(err.code).to.be(503);
         expect(updatedPerson).to.be(undefined);
         expect(tries).to.be(2);
         done();
@@ -324,10 +342,9 @@ describe('sqlbox model', function () {
       });
     });
 
-    it('should return a 404 error if nothing found', function (done) {
+    it('should return a undefined error if nothing found', function (done) {
       Person.first({age: 40}, function (err, person) {
-        expect(err).to.be.an(Error);
-        expect(err.message).to.be('404');
+        expect(err).to.be(null);
         expect(person).to.be(undefined);
         done();
       });

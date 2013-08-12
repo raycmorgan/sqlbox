@@ -1,9 +1,10 @@
 function createPeopleTable(pg, callback) {
   pg.query('CREATE TEMP TABLE sqlbox_test_people (' +
     'id SERIAL PRIMARY KEY,' +
-    'name VARCHAR,' +
+    'name TEXT,' +
     'age INTEGER,' +
     'accountId INTEGER,' +
+    'hashed_password TEXT,' +
     'created_at TIMESTAMP DEFAULT current_timestamp,' +
     'updated_at TIMESTAMP DEFAULT current_timestamp,' +
     'revision INTEGER DEFAULT 1' +
