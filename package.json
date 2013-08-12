@@ -5,7 +5,8 @@
   "dependencies": {
     "sql": "~0.26.0",
     "underscore": "~1.5.1",
-    "pg": "~2.3.1"
+    "pg": "~2.3.1",
+    "validator": "~1.4.0"
   },
   "devDependencies": {
     "nodemon": "~0.7.8",

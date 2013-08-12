@@ -18,7 +18,12 @@ describe('sqlbox model', function () {
         {name: 'name', type: 'string'},
         {name: 'age', type: 'integer'},
         {name: 'accountId', type: 'integer'}
-      ]
+      ],
+
+      // logQueries: true
+      validate: function (person, v) {
+        v.check(person.age, 'Age must be provided').isInt();
+      }
     });
 
     helpers.createPeopleTable(sqlbox.clients.default, done);
@@ -109,11 +114,20 @@ describe('sqlbox model', function () {
 
   describe('#save on a new object', function () {
     it('should save proper object', function (done) {
-      Person.save({name: 'Jim'}, function (err, person) {
+      Person.save({name: 'Jim', age: 25}, function (err, person) {
         expect(err).to.be(null);
         expect(person).to.be.an('object');
         expect(person.id).to.be.a('number');
         expect(person.revision).to.be(1);
+        done();
+      });
+    });
+
+    it('should pass 403 error on validation error', function (done) {
+      Person.save({name: 'Jim'}, function (err, person) {
+        expect(err).to.be.an(Error);
+        expect(err.message).to.be('403');
+        expect(err.validationErrors.length).to.be(1);
         done();
       });
     });
