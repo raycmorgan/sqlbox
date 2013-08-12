@@ -1,5 +1,5 @@
 function createPeopleTable(pg, callback) {
-  pg.query('CREATE TABLE people (' +
+  pg.query('CREATE TEMP TABLE people (' +
     'id SERIAL PRIMARY KEY,' +
     'name VARCHAR,' +
     'age INTEGER,' +

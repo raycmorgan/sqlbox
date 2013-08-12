@@ -31,7 +31,19 @@ describe('sqlbox model', function () {
     });
   });
 
-  describe('#get', function (done) {
+  describe('#build', function () {
+    it('should remove extra properties', function () {
+      var person = Person.build({name: 'Jim', company: 'Example, Inc'});
+      expect(person).to.eql({name: 'Jim'});
+    });
+
+    it('should convert source columns to name keys', function () {
+      var person = Person.build({created_at: 1});
+      expect(person.createdAt).to.be(1);
+    });
+  }); // #build
+
+  describe('#get', function () {
     beforeEach(function (done) {
       Person.save({name: 'Jim', age: 25}, done);
     });
@@ -54,7 +66,7 @@ describe('sqlbox model', function () {
     });
   }); // #get
 
-  describe('#mget', function (done) {
+  describe('#mget', function () {
     beforeEach(function (done) {
       Person.save({name: 'Jim', age: 25}, function () {});
       Person.save({name: 'Mark', age: 27}, done);
@@ -95,7 +107,7 @@ describe('sqlbox model', function () {
     });
   }); //#mget
 
-  describe('#save on a new object', function (done) {
+  describe('#save on a new object', function () {
     it('should save proper object', function (done) {
       Person.save({name: 'Jim'}, function (err, person) {
         expect(err).to.be(null);
@@ -107,7 +119,7 @@ describe('sqlbox model', function () {
     });
   }); // #save on a new object
 
-  describe('#save on an existing object', function (done) {
+  describe('#save on an existing object', function () {
     var person;
 
     beforeEach(function (done) {
@@ -143,5 +155,126 @@ describe('sqlbox model', function () {
         done();
       });
     });
-  });
+  }); // #save on an existing object
+
+  describe('#remove', function () {
+    var person;
+
+    beforeEach(function (done) {
+      Person.save({name: 'Jim', age: 25}, function (err, p) {
+        if (err) {
+          return done(err);
+        }
+
+        person = p;
+        done();
+      });
+    });
+
+    it('should be able to remove a row', function (done) {
+      Person.remove(person.id, function (err, result) {
+        expect(err).to.be(null);
+        expect(result).to.be(true);
+        done();
+      });
+    });
+
+    it('should return a 404 error when row not found', function (done) {
+      Person.remove(person.id+1, function (err, result) {
+        expect(err).to.be.an(Error);
+        expect(err.message).to.be('404');
+        expect(result).to.be(undefined);
+        done();
+      });
+    });
+  }); // #remove
+
+  describe('#modify', function () {
+    var person;
+
+    beforeEach(function (done) {
+      Person.save({name: 'Jim', age: 25}, function (err, p) {
+        if (err) {
+          return done(err);
+        }
+
+        person = p;
+        done();
+      });
+    });
+
+    it('should fetch and modify a row', function (done) {
+      Person.modify(person.id, {}, function (person) {
+        person.age = 26;
+      }, function (err, updatedPerson) {
+        expect(err).to.be(null);
+        expect(updatedPerson.id).to.be(person.id);
+        expect(updatedPerson.revision).to.be(person.revision + 1);
+        expect(updatedPerson.age).to.be(26);
+        done();
+      });
+    });
+
+    it('should retry if conflict occurs', function (done) {
+      var tries = 0;
+
+      Person.modify(person.id, {}, function (dbPerson) {
+        tries++;
+
+        // This is just to change the revision in the database
+        // during the first modify attempt. Simulates a conncurrent
+        // update
+        if (tries == 1) {
+          person.name = 'Tim';
+          Person.save(person, function () {});
+        }
+
+        dbPerson.age = 26;
+      }, function (err, updatedPerson) {
+        expect(tries).to.be(2);
+        expect(updatedPerson.age).to.be(26);
+        expect(updatedPerson.name).to.be('Tim');
+        expect(updatedPerson.revision).to.be(person.revision + 2);
+        done();
+      });
+    });
+
+    it('should fail with 409 if ensure fails to match', function (done) {
+      var opts = {
+        ensures: [function (person) { person.age > 30; }]
+      };
+
+      Person.modify(person.id, opts, function (dbPerson) {
+        dbPerson.age = 26;
+      }, function (err, updatedPerson) {
+        expect(err.message).to.be('409');
+        expect(updatedPerson).to.be(undefined);
+        done();
+      });
+    });
+
+    it('should fail after too many retries', function (done) {
+      var opts = {
+        maxRetries: 2
+      };
+
+      var tries = 0;
+
+      Person.modify(person.id, opts, function (dbPerson) {
+        tries++;
+        
+        // This forces a retry, like a concurrent update keeps happening before
+        // the fetch/mutate/save of modify happens.
+        dbPerson.age++;
+        Person.save(dbPerson, function () {});
+
+        dbPerson.age = 26;
+      }, function (err, updatedPerson) {
+        expect(err.message).to.be('503');
+        expect(updatedPerson).to.be(undefined);
+        expect(tries).to.be(2);
+        done();
+      });
+    });
+  }); // #modify
 });
