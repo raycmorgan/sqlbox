@@ -315,7 +315,7 @@ describe('sqlbox model', function () {
 
         dbPerson.age = 26;
       }, function (err, updatedPerson) {
-        expect(err.code).to.be(503);
+        expect(err.code).to.be(504);
         expect(updatedPerson).to.be(undefined);
         expect(tries).to.be(2);
         done();

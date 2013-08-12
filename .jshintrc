@@ -1,0 +1,6 @@
+{
+  "trailing": true,
+  "indent": 2,
+  "laxcomma": true,
+  "node": true
+}
