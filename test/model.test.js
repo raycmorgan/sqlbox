@@ -31,10 +31,11 @@ describe('sqlbox model', function () {
       },
 
       hooks: {
-        beforeSave: function (person) {
+        beforeSave: function (person, next) {
           if (person.password === 'foo') {
             person.hashedPassword = 'bar';
           }
+          next();
         }
       }
     });

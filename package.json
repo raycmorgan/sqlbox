@@ -1,13 +1,14 @@
 {
   "name": "sqlbox",
-  "version": "0.1.17",
+  "version": "0.2.0",
   "description": "Simple non-joining, non-ORM SQL (postgres) database interface. Still Alpha.",
   "main": "./lib/sqlbox",
   "dependencies": {
     "sql": "~0.26.0",
     "underscore": "~1.5.1",
     "pg": "~2.3.1",
-    "validator": "~1.4.0"
+    "validator": "~1.4.0",
+    "async": "~0.2.9"
   },
   "devDependencies": {
     "nodemon": "~0.7.8",
