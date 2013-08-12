@@ -3,6 +3,10 @@
   "version": "0.2.3",
   "description": "Simple non-joining, non-ORM SQL (postgres) database interface. Still Alpha.",
   "main": "./lib/sqlbox",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/raycmorgan/sqlbox.git"
+  },
   "dependencies": {
     "sql": "~0.26.0",
     "underscore": "~1.5.1",
