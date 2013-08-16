@@ -364,7 +364,6 @@ var User = sqlbox.create({
   validations: {
     name: ['isAlpha']
   }
-}
 });
 
 User.save({name: 'Jim', age: '25'}, function (err, user) {
