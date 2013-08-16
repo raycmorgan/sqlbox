@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/raycmorgan/sqlbox.png?branch=master)](https://travis-ci.org/raycmorgan/sqlbox)
+
 # Node.js friendly SQL library
 
 SQLBox is not your typical ORM library like Sequelize, Mongoose, ActiveRecord, etc. It takes a different approach that involves simple function calls and plain (prototype free) objects.
