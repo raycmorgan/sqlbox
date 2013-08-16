@@ -14,17 +14,46 @@ SQLBox is not your typical ORM library like Sequelize, Mongoose, ActiveRecord, e
 # State
 
 * Only Postgres is currently supported. Internally uses node-sql to generate queries, so it will be very little work to get MySQL and SQLite working.
+* Biggest missing feature is relations. This will be implemented in the near future and documented. For now, a little [async](https://github.com/caolan/async) will go a long way in fetching related data.
+* It is stable and safe to use data wise. The APIs might change a bit as features are added/removed/changed.
 
+# Table of contents
+
+* [Usage](#usage)
+    * [Setup](#setup)
+        * [Installation](#installation)
+        * [Create database client](#create-database-client)
+    * [Configuring a model](#configuring-a-model)
+        * [Alias column names](#alias-column-names)
+        * [Validations](#validations)
+        * [Hooks](#hooks)
+    * [Database interaction](#database-interaction)
+        * [Getting rows](#getting-rows)
+            * [get](#get)
+            * [mget](#mget)
+            * [first](#first)
+            * [all](#all)
+        * [Saving data](#saving-data)
+            * [save](#save)
+            * [modify](#modify)
+        * [Open ended queries](#open-ended-queries)
+            * [query](#query)
+            * [client](#client)
+    * [Complete example](#complete-example)
+    * [Errors](#errors)
+* [Housekeeping](#housekeeping)
 
 # Usage
 
-## Setup SQLBox
+## Setup
 
 ### Installation
 
 ```bash
 $ npm install sqlbox
 ```
+
+### Create database client
 
 Before anything, you must configure the database client.
 
@@ -179,6 +208,8 @@ All hooks and the actual save are by default contained in a SQL transaction. Thi
 
 ### Getting rows
 
+#### get
+
 Get a single row by id. If it is not found an error with code 404 will be passed back.
 
 ```javascript
@@ -186,6 +217,8 @@ User.get(1, function (err, user) {
   // ...
 });
 ```
+
+#### mget
 
 Get multiple rows by ids. Missing ids just won't return anything. If no ids exist, an empty array is passed back.
 
@@ -195,6 +228,8 @@ User.mget([1, 2, 3], function (err, users) {
 });
 ```
 
+#### first
+
 Find the first row that matches a simple query. Passes back `undefined` if nothing found.
 
 ```javascript
@@ -202,6 +237,8 @@ User.first({name: 'Jim', age: 25}, function (err, user) {
   // ...
 });
 ```
+
+#### all
 
 Find all rows that match a query.
 
@@ -252,6 +289,8 @@ More complex queries than all provides (AND-ing columns), is currently not suppo
 
 ### Saving data
 
+#### save
+
 To save a new row to the database, you simply use normal objects.
 
 ```javascript
@@ -280,9 +319,11 @@ User.get(1, function (err, user) {
 });
 ```
 
+#### modify
+
 Since fetching, modifing and saving is such a common pattern SQLBox provides a simple and very powerful abstraction to help out.
 
-`modify`. You describe what object to fetch, what it should look like and how to change it. With that information, SQLBox will fetch the object, make sure it passes your tests and attempt to save it. If another client concurrently updated the object, this process will be repeated a number of times (or until your tests no longer pass). This makes it super easy to make sure that you are modifying the row as you see it, without the overhead of a transaction.
+With modify, you describe what object to fetch, what it should look like and how to change it. With that information, SQLBox will fetch the object, make sure it passes your tests and attempt to save it. If another client concurrently updated the object, this process will be repeated a number of times (or until your tests no longer pass). This makes it super easy to make sure that you are modifying the row as you see it, without the overhead of a transaction.
 
 ```javascript
 var opts = {
@@ -297,19 +338,21 @@ User.modify(1, opts, function mutator(user) {
 });
 ```
 
-#### Important note about modify
+##### Important note about modify
 
 The ensure functions and mutator function (3rd argument) should not have any side effects. They can be called one or many times, so those side effects will happen an undetermined amount of times. The callback (last argument) is the place to do things once the save is complete.
 
 Note: the beforeSave hook will be called each time. Rememeber that the save hooks are within a transaction, so usually this should be fine unless you are mutating external services. Though that most likely belongs in the afterSave hook.
 
-#### Future modify changes
+##### Future modify changes
 
 Considering an option `transation: true` would force both the get and save into the same transaction. This would ensure only 1 try, but incur the locking overhead.
 
 ### Open ended queries
 
 These are lower level interfaces for working with the tables. They do not trigger any hooks, so use them with care.
+
+#### query
 
 Query using the model's internal [node-sql](https://github.com/brianc/node-sql) definition. See the [node-sql](https://github.com/brianc/node-sql) docs for all the good stuff you can do.
 
@@ -320,6 +363,8 @@ User.query(function (t) {
   // ...
 });
 ```
+
+#### client
 
 Lastly you can access the database client you created directly.
 
@@ -337,8 +382,6 @@ User.client.query(queryString, values, function (err, result) {
   } else {
     // no user found
   }
-}
-}
 });
 ```
 
