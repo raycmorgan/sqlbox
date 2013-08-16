@@ -8,7 +8,9 @@ describe('sqlbox model', function () {
 
   beforeEach(function (done) {
     sqlbox.createClient(function (pg) {
-      return new pg.Client('postgres://localhost/' + (process.env.DATABASE_NAME || process.env.USER));
+      var user = process.env.DATABASE_USER ? process.env.DATABASE_USER + ':@' : '';
+
+      return new pg.Client('postgres://' + user + 'localhost/' + (process.env.DATABASE_NAME || process.env.USER));
     });
 
     Person = sqlbox.create({

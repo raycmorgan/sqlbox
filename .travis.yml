@@ -1,0 +1,7 @@
+language: node_js
+node_js:
+  - "0.10"
+services: postgres
+before_script:
+  - psql -c 'create database sqlbox_test;' -U postgres
+env: DATABASE_USER=postgres DATABASE_NAME=sqlbox_test
