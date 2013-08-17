@@ -16,6 +16,7 @@ SQLBox is not your typical ORM library like Sequelize, Mongoose, ActiveRecord, e
 * Only Postgres is currently supported. Internally uses node-sql to generate queries, so it will be very little work to get MySQL and SQLite working.
 * Biggest missing feature is relations. This will be implemented in the near future and documented. For now, a little [async](https://github.com/caolan/async) will go a long way in fetching related data.
 * It is stable and safe to use data wise. The APIs might change a bit as features are added/removed/changed.
+* Delete is missing, whoops. That will be added shortly.
 
 # Table of contents
 
