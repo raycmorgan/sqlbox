@@ -331,7 +331,7 @@ User.save(user, function (err, savedUser) {
 });
 ```
 
-To update a row simply fetch it, change it and save it.
+To update a row simply fetch it, change it and save it. Only the fields that are changed will be sent to the database.
 
 ```javascript
 User.get(1, function (err, user) {
