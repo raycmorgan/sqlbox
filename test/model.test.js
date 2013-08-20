@@ -43,7 +43,6 @@ describe('sqlbox model without client', function () {
 });
 
 describe('sqlbox model', function () {
-
   beforeEach(function (done) {
     sqlbox.createClient(function (pg) {
       var user = process.env.DATABASE_USER ? process.env.DATABASE_USER + ':@' : '';
