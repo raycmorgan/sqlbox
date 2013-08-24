@@ -17,3 +17,5 @@ var Post = sqlbox.create({
     {type: 'hasMany', name: 'comments', model: Comment}
   ]
 });
+
+module.exports = Post;

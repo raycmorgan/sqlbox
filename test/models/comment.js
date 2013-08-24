@@ -16,3 +16,5 @@ var Comment = sqlbox.create({
     {type: 'belongsTo', name: 'post', model: Post}
   ]
 });
+
+module.exports = Comment;

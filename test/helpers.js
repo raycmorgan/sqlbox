@@ -54,8 +54,8 @@ function createPostTable(pg, callback) {
     'updated_at TIMESTAMP DEFAULT current_timestamp,' +
     'revision INTEGER DEFAULT 1,' +
     'title TEXT,' +
-    'authorId INTEGER,' +
-    'title INTEGER' +
+    'author_id INTEGER,' +
+    'editor_id INTEGER' +
   ');', callback);
 }
 
@@ -66,8 +66,8 @@ function createCommentTable(pg, callback) {
     'updated_at TIMESTAMP DEFAULT current_timestamp,' +
     'revision INTEGER DEFAULT 1,' +
     'content TEXT,' +
-    'userId INTEGER,' +
-    'postId INTEGER' +
+    'user_id INTEGER,' +
+    'post_id INTEGER' +
   ');', callback);
 }
 
