@@ -143,7 +143,6 @@ describe('sqlbox model', function () {
         expect(err).to.be(null);
         expect(person).to.be.an('object');
         expect(person.id).to.be.a('number');
-        expect(person.revision).to.be(1);
         done();
       });
     });
@@ -201,11 +200,10 @@ describe('sqlbox model', function () {
       });
     });
 
-    it('should reject an update if the revision does not match', function (done) {
-      person.revision = 20;
+    it('should error 409 if where clause fails', function (done) {
+      person.name = 'Frank';
 
-      Person.save(person, function (err, updatedPerson) {
-        expect(err).to.be.an(Error);
+      Person.save(person, {age: 30}, function (err, updatedPerson) {
         expect(err.code).to.be(409);
         expect(updatedPerson).to.be(undefined);
         done();
@@ -265,70 +263,33 @@ describe('sqlbox model', function () {
       }, function (err, updatedPerson) {
         expect(err).to.be(null);
         expect(updatedPerson.id).to.be(person.id);
-        expect(updatedPerson.revision).to.be(person.revision + 1);
         expect(updatedPerson.age).to.be(26);
         done();
       });
     });
 
-    it('should retry if conflict occurs', function (done) {
-      var tries = 0;
+    it('should pass back 409 error if where clause fails', function (done) {
+      Person.modify(person.id, {name: 'Jim'}, function (dbPerson) {
+        person.name = 'Tim';
+        Person.save(person, function () {});
 
-      Person.modify(person.id, {}, function (dbPerson) {
-        tries++;
-
-        // This is just to change the revision in the database
-        // during the first modify attempt. Simulates a conncurrent
-        // update
-        if (tries == 1) {
-          person.name = 'Tim';
-          Person.save(person, function () {});
-        }
-
-        dbPerson.age = 26;
-      }, function (err, updatedPerson) {
-        expect(tries).to.be(2);
-        expect(updatedPerson.age).to.be(26);
-        expect(updatedPerson.name).to.be('Tim');
-        expect(updatedPerson.revision).to.be(person.revision + 2);
-        done();
-      });
-    });
-
-    it('should fail with 409 if ensure fails to match', function (done) {
-      var opts = {
-        ensures: [function (person) { person.age > 30; }]
-      };
-
-      Person.modify(person.id, opts, function (dbPerson) {
         dbPerson.age = 26;
       }, function (err, updatedPerson) {
         expect(err.code).to.be(409);
-        expect(updatedPerson).to.be(undefined);
         done();
       });
     });
 
-    it('should fail after too many retries', function (done) {
-      var opts = {
-        maxRetries: 2
-      };
-
-      var tries = 0;
-
-      Person.modify(person.id, opts, function (dbPerson) {
-        tries++;
-
-        // This forces a retry, like a concurrent update keeps happening before
-        // the fetch/mutate/save of modify happens.
-        dbPerson.age++;
-        Person.save(dbPerson, function () {});
+    it('should update if where passes even with concurrent update', function (done) {
+      Person.modify(person.id, {age: 25}, function (dbPerson) {
+        person.name = 'Tim';
+        Person.save(person, function () {});
 
         dbPerson.age = 26;
       }, function (err, updatedPerson) {
-        expect(err.code).to.be(504);
-        expect(updatedPerson).to.be(undefined);
-        expect(tries).to.be(2);
+        expect(err).to.be(null);
+        expect(updatedPerson.name).to.be('Tim');
+        expect(updatedPerson.age).to.be(26);
         done();
       });
     });

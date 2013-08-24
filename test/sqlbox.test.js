@@ -50,20 +50,6 @@ describe('sqlbox module', function () {
       });
     }); // #appendTimestampColumns
 
-    describe('#appendRevisionColumn', function () {
-      it('should create a new array with the new column', function () {
-        var columns = [{name: 'id'}];
-        var updatedColumns = sqlbox.appendRevisionColumn(columns, 'revision');
-
-        expect(updatedColumns).to.eql([
-          {name: 'id'},
-          {name: 'revision', type: 'integer'}
-        ]);
-
-        expect(updatedColumns).to.not.eql(columns);
-      });
-    }); // #appendRevisionColumn
-
     describe('#standardizeColumns', function () {
       it('should create a new array with the updated columns', function () {
         var columns = [{name: 'id'}];

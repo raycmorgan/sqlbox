@@ -74,14 +74,12 @@ As noted above, only Postgres is currently supported. Sorry, others soonish.
 To use sqlbox, you need to define your table in the database and your model in Node land. When creating the table in your database, you will need to make sure the following columns exist:
 
 * `id` — The primary key, must be set by the database on insert (either serial or some other function)
-* `revision` — This is used to prevent concurrent updates on different versions
 * `created_at` — Set when row is inserted, must default to `now()`
 * `updated_at` — Updated everytime a row is updated. Should default to `now()`
 
 ```sql
 CREATE TABLE "users" (
   "id" SERIAL PRIMARY KEY,
-  "revision" integer DEFAULT 1,
   "created_at" timestamp DEFAULT now(),
   "updated_at" timestamp DEFAULT now(),
   "name" TEXT,
@@ -108,7 +106,7 @@ var User = sqlbox.create({
 });
 ```
 
-With that you have a fully functional model. The `name` property is the only required field. By default the plural form is used as the database table name. The `columns` property is an array defining the custom columns. Note that you don't have to specify the 4 required columns (id, revision, created_at and updated_at).
+With that you have a fully functional model. The `name` property is the only required field. By default the plural form is used as the database table name. The `columns` property is an array defining the custom columns. Note that you don't have to specify the 4 required columns (id, created_at and updated_at).
 
 ### Custom database table names
 
@@ -358,7 +356,7 @@ var user = {
 };
 
 User.save(user, function (err, savedUser) {
-  // savedUser has the properties id, revision, createdAt and updatedAt all set
+  // savedUser has the properties id, createdAt and updatedAt all set
 });
 ```
 
@@ -377,34 +375,36 @@ User.get(1, function (err, user) {
 });
 ```
 
-#### modify
-
-Since fetching, modifing and saving is such a common pattern SQLBox provides a simple and very powerful abstraction to help out.
-
-With modify, you describe what object to fetch, what it should look like and how to change it. With that information, SQLBox will fetch the object, make sure it passes your tests and attempt to save it. If another client concurrently updated the object, this process will be repeated a number of times (or until your tests no longer pass). This makes it super easy to make sure that you are modifying the row as you see it, without the overhead of a transaction.
+You can also specify a where condition that has to match for the update to be successful. This is a great way to ensure a concurrent update doesn't leave things in a strange state.
 
 ```javascript
-var opts = {
-    ensures: [ function (user) { return user.age < 30; } ],
-    maxRetries: 5 // defaults to 3
-};
+User.get(1, function (err, user) {
+  if (err) {
+    // something like return callback(err);
+  }
 
-User.modify(1, opts, function mutator(user) {
+  var currentAge = user.age;
+  user.age++;
+
+  User.save(user, {age: currentAge} function (err, savedUser) {
+    // ...
+  });
+});
+```
+
+#### modify
+
+Since fetching, modifing and saving is such a common pattern SQLBox provides a simple abstraction to help out.
+
+Here is an example of updating a user's age unless they are already older than 29.
+
+```javascript
+User.modify(1, {age: {lt: 30}}, function mutator(user) {
   user.age++;
 }, function (err, savedUser) {
   // ...
 });
 ```
-
-##### Important note about modify
-
-The ensure functions and mutator function (3rd argument) should not have any side effects. They can be called one or many times, so those side effects will happen an undetermined amount of times. The callback (last argument) is the place to do things once the save is complete.
-
-Note: the beforeSave hook will be called each time. Rememeber that the save hooks are within a transaction, so usually this should be fine unless you are mutating external services. Though that most likely belongs in the afterSave hook.
-
-##### Future modify changes
-
-Considering an option `transation: true` would force both the get and save into the same transaction. This would ensure only 1 try, but incur the locking overhead.
 
 ### Open ended queries
 
