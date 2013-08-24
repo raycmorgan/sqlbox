@@ -408,6 +408,39 @@ describe('sqlbox model', function () {
       });
     });
 
+    it('should find people with age greater than 30', function (done) {
+      Person.all({age: {gt: 30}}, function (err, people) {
+        expect(err).to.be(null);
+        expect(people[0].name).to.be('Tom');
+        expect(people[1].name).to.be('Frank');
+        done();
+      });
+    });
+
+    it('should find people with age greater than 20, less than 32', function (done) {
+      Person.all({age: {gt: 20, lt: 32}}, function (err, people) {
+        expect(err).to.be(null);
+        expect(people[0].name).to.be('Jim');
+        done();
+      });
+    });
+
+    it('should find people with name not null', function (done) {
+      Person.all({age: {not: null}}, function (err, people) {
+        expect(err).to.be(null);
+        expect(people.length).to.be(3);
+        done();
+      });
+    });
+
+    it('should find people with names in an array', function (done) {
+      Person.all({name: {in: ['Tom', 'Jim']}}, function (err, people) {
+        expect(err).to.be(null);
+        expect(people.length).to.be(2);
+        done();
+      });
+    });
+
     it('should pass an empty array when nothing found', function (done) {
       Person.all({age: 40}, function (err, people) {
         expect(err).to.be(null);

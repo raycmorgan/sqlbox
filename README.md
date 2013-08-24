@@ -257,7 +257,7 @@ User.mget([1, 2, 3], function (err, users) {
 
 #### first
 
-Find the first row that matches a simple query. Passes back `undefined` if nothing found.
+Find the first row that matches a query. Passes back `undefined` if nothing found.
 
 ```javascript
 User.first({name: 'Jim', age: 25}, function (err, user) {
@@ -312,7 +312,38 @@ t.name.desc;
 t.name.isNull()
 ```
 
-More complex queries than all provides (AND-ing columns), is currently not supported. You can however use the `.query` method to do much more complex things at a somewhat lower level. See below.
+##### Operators in queries
+
+In the query of `all` and `first`, you can specify operators such as: in, lt, gte.
+
+```javascript
+// Find all users with age greater than or equal to 21
+User.all({age: {gte: 21}}, function (err, users) {});
+
+// Find all users with age greater than or equal to 21 but less than 30
+User.all({age: {gte: 21, lt: 30}}, function (err, users) {});
+
+// More examples:
+
+{name: {like: "%im"}, age: {lte: 25}}
+
+{employer: {not: null}}
+```
+
+Here are a list of available operators:
+
+```
+eq
+not
+gt
+gte
+lt
+lte
+like
+notLike
+in
+notIn
+```
 
 ### Saving data
 
