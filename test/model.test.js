@@ -2,44 +2,52 @@ var expect = require('expect.js')
   , helpers = require('./helpers')
   , sqlbox = require('../lib/sqlbox');
 
-describe('sqlbox model', function () {
+var Person = sqlbox.create({
+  tableName: 'sqlbox_test_people',
 
-  var Person;
+  columns: [
+    {name: 'name', type: 'string'},
+    {name: 'age', type: 'integer'},
+    {name: 'accountId', type: 'integer'},
+    {name: 'hashedPassword', type: 'string'}
+  ],
+
+  // logQueries: true
+  // validate: function (person, v) {
+  //   v.check(person.age, 'Age must be provided').isInt();
+  // },
+
+  validations: {
+    age: ['isInt', 'notNull']
+  },
+
+  hooks: {
+    beforeSave: function (person, next) {
+      if (person.password === 'foo') {
+        person.hashedPassword = 'bar';
+      }
+      next();
+    }
+  }
+});
+
+describe('sqlbox model without client', function () {
+  it('should throw a 500 error', function () {
+    expect(function () {
+      Person.get(1, function () {});
+    }).to.throwException(function (err) {
+      expect(err.code).to.be(500);
+    });
+  });
+});
+
+describe('sqlbox model', function () {
 
   beforeEach(function (done) {
     sqlbox.createClient(function (pg) {
       var user = process.env.DATABASE_USER ? process.env.DATABASE_USER + ':@' : '';
 
       return new pg.Client('postgres://' + user + 'localhost/' + (process.env.DATABASE_NAME || process.env.USER));
-    });
-
-    Person = sqlbox.create({
-      tableName: 'sqlbox_test_people',
-
-      columns: [
-        {name: 'name', type: 'string'},
-        {name: 'age', type: 'integer'},
-        {name: 'accountId', type: 'integer'},
-        {name: 'hashedPassword', type: 'string'}
-      ],
-
-      // logQueries: true
-      // validate: function (person, v) {
-      //   v.check(person.age, 'Age must be provided').isInt();
-      // },
-
-      validations: {
-        age: ['isInt', 'notNull']
-      },
-
-      hooks: {
-        beforeSave: function (person, next) {
-          if (person.password === 'foo') {
-            person.hashedPassword = 'bar';
-          }
-          next();
-        }
-      }
     });
 
     helpers.createPeopleTable(sqlbox.clients.default, done);
