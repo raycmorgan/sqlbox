@@ -2,14 +2,13 @@
 
 # Node.js friendly SQL library
 
-SQLBox is not your typical ORM library like Sequelize, Mongoose, ActiveRecord, etc. It takes a different approach that involves simple function calls and plain (prototype free) objects.
+SQLBox is not your typical ORM library like Sequelize or Mongoose, etc. It takes a different approach that involves simple function calls and plain (prototype free) objects. No worrying about this — ever.
 
 ## Main differences
 
 * No class/instance method distinction, just normal node modules and functions.
-* No Joins. Simpler queries, easier to scale.
 * Plays very nicely with Node and the ecosystem. (strict adherence to the standards)
-
+* Consitent declarative syntax where possible over things like chaining.
 
 # State
 
