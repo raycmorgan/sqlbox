@@ -10,7 +10,7 @@ describe('sqlbox module', function () {
 
     it('should return an object', function () {
       expect(sqlbox.create({
-        tableName: 'foo'
+        name: 'foo'
       })).to.be.a('object');
     });
 
@@ -103,6 +103,23 @@ describe('sqlbox module', function () {
         expect(table).to.be.an('object');
       });
     }); // #defineTable
+
+    describe('#constructTableName', function () {
+      it('should return tableName directly if supplied', function () {
+        var model = {name: 'Person', tableName: 'myCustom_table_name'};
+        expect(sqlbox.constructTableName(model)).to.equal(model.tableName);
+      });
+
+      it('should return the plural, lowercase form of name', function () {
+        var model = {name: 'Person'};
+        expect(sqlbox.constructTableName(model)).to.equal('people');
+      });
+
+      it('should prepend underscored,lowercase namespace', function () {
+        var model = {name: 'Person', namespace: 'MyApp'};
+        expect(sqlbox.constructTableName(model)).to.equal('my_app_people');        
+      });
+    }); // #constructTableName
 
   }); // Private Function
 

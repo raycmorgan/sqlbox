@@ -25,6 +25,7 @@ SQLBox is not your typical ORM library like Sequelize, Mongoose, ActiveRecord, e
         * [Installation](#installation)
         * [Create database client](#create-database-client)
     * [Configuring a model](#configuring-a-model)
+        * [Custom database table names](#custom-database-table-names)
         * [Alias column names](#alias-column-names)
         * [Validations](#validations)
         * [Hooks](#hooks)
@@ -96,7 +97,7 @@ I recommend using something like [db-migrate](https://github.com/nearinfinity/no
 var sqlbox = require('sqlbox');
 
 var User = sqlbox.create({
-  tableName: 'users',
+  name: 'user',
 
   columns: [
     {name: 'name', type: 'string'},
@@ -107,15 +108,40 @@ var User = sqlbox.create({
 });
 ```
 
-With that you have a fully functional model. But before we move onto what you can do with that, let's point out a few things. The `tableName` property is required and must exactly match the database name (underscores and all). The `columns` property is an array defining the custom columns. Note that you don't have to specify the 4 required columns (id, revision, created_at and updated_at). Also note that column name's here are camelCase. When accessing the database sqlbox will use the underscore/lowercase form.
+With that you have a fully functional model. The `name` property is the only required field. By default the plural form is used as the database table name. The `columns` property is an array defining the custom columns. Note that you don't have to specify the 4 required columns (id, revision, created_at and updated_at).
+
+### Custom database table names
+
+By default SQLBox uses the lowercase, underscore, plural form of the `name` property as the table name.
+
+```
+"user" -> users
+"Users" -> users
+"person" -> people
+"creditCard" -> credit_cards
+```
+
+If you have more unique table names the following properties can be used to customize the table name:
+
+* `namespace` – Used to group models. If present, a lowercase, underscore form will be prefixed with the name.
+* `tableName` – When all else fails, use this. It is the exact name of the table name to use.
+
+Here are some examples of what is produced:
+
+```
+{name: 'user', namespace: 'MyApp'} -> my_app_users
+{name: 'user', tableName: 'myApp_member'} -> myApp_member
+```
 
 ### Alias column names
 
-You can alias a column name to something completely different than the database name by specifing source. Note that source is the exact representation of the database field (underscores, etc).
+By default you use camelCase names for columns in sqlbox. These will be translated to their underscored versions when accessing the database. For example, if you have a column in the database named `hashed_password`, you would set the name value of the column in sqlbox to be `hashedPassword`.
+
+You can alias a column name to something completely different by specifing source. Note that source is the exact representation of the database field (underscores, etc).
 
 ```javascript
 var User = sqlbox.create({
-  tableName: 'users',
+  name: 'user',
 
   columns: [
     {name: 'location', type: 'string', source: 'zip_code_or_state'}
@@ -129,7 +155,7 @@ There are 2 ways to validate a model before it is saved. The simple form:
 
 ```javascript
 var User = sqlbox.create({
-  tableName: 'users',
+  name: 'user',
 
   columns: [
     {name: 'name', type: 'string'},
@@ -149,7 +175,7 @@ The other more advanced way is to specify `validate` which gets passed the objec
 
 ```javascript
 var User = sqlbox.create({
-  tableName: 'users',
+  name: 'user',
 
   columns: [
     {name: 'name', type: 'string'},
@@ -176,7 +202,7 @@ Hooks let you specify custom logic when certain things have happened. The curren
 
 ```javascript
 var User = sqlbox.create({
-  tableName: 'users',
+  name: 'user',
 
   columns: [
     {name: 'name', type: 'string'},
@@ -398,7 +424,7 @@ sqlbox.createClient(function (pg) {
 });
 
 var User = sqlbox.create({
-  tableName: 'users',
+  name: 'user',
 
   columns: [
     {name: 'name', type: 'string'},

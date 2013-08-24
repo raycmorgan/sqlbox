@@ -12,7 +12,8 @@
     "underscore": "~1.5.1",
     "pg": "~2.3.1",
     "validator": "~1.4.0",
-    "async": "~0.2.9"
+    "async": "~0.2.9",
+    "pluralize": "0.0.5"
   },
   "devDependencies": {
     "nodemon": "~0.7.8",

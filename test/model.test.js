@@ -3,7 +3,8 @@ var expect = require('expect.js')
   , sqlbox = require('../lib/sqlbox');
 
 var Person = sqlbox.create({
-  tableName: 'sqlbox_test_people',
+  name: 'person',
+  namespace: 'sqlboxTest',
 
   columns: [
     {name: 'name', type: 'string'},
