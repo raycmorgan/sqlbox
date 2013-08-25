@@ -192,6 +192,8 @@ It might look like these two examples are equivalent, but the first will give yo
 
 Hooks let you specify custom logic when certain things have happened. The currently available hooks:
 
+* `beforeValidation`
+* `afterValidation`
 * `beforeSave` — Called before both creates and updates
 * `afterSave` — Called after both creates and updates
 * `afterUpdate`
@@ -223,7 +225,7 @@ You can specify zero, one, or more hooks in the `hooks` object. The values shoul
 
 #### Save hooks
 
-When saving an object, the following hooks will be called in this order: `beforeSave`, `afterUpdate` (or) `afterCreate`, `afterSave`.
+When saving an object, the following hooks will be called in this order: `beforeValidation`, `afterValidation`, `beforeSave`, `afterUpdate` (or) `afterCreate`, `afterSave`. If validation passes then only `beforeValidation` will be called. If there are no changes to the record, only `beforeValidation` and `afterValidation` will be called.
 
 All hooks and the actual save are by default contained in a SQL transaction. This allows you to do things like save related models in safety knowing that if anything goes wrong the database will be in a consitent state. Sometimes you don't want this behavior (reaching out to a lot of external services or something), to disable the tansaction pass the option `transaction: false`. (this actually doesn't work yet, soon)
 
@@ -359,7 +361,7 @@ User.save(user, function (err, savedUser) {
 });
 ```
 
-To update a row simply fetch it, change it and save it. Only the fields that are changed will be sent to the database.
+To update a row simply fetch it, change it and save it. Only the fields that are changed will be sent to the database. When there are no changes — `beforeSave`, `afterSave` and `afterUpdate` hooks are not fired and no database interaction will happen.
 
 ```javascript
 User.get(1, function (err, user) {

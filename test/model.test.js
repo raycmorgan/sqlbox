@@ -23,7 +23,7 @@ var Person = sqlbox.create({
   },
 
   hooks: {
-    beforeSave: function (person, next) {
+    beforeValidation: function (person, next) {
       if (person.password === 'foo') {
         person.hashedPassword = 'bar';
       }
@@ -206,6 +206,14 @@ describe('sqlbox model', function () {
       Person.save(person, {age: 30}, function (err, updatedPerson) {
         expect(err.code).to.be(409);
         expect(updatedPerson).to.be(undefined);
+        done();
+      });
+    });
+
+    it('should not perform update if no changes', function (done) {
+      Person.save(person, function (err, updatedPerson) {
+        expect(err).to.be(null);
+        expect(updatedPerson).to.eql(person);
         done();
       });
     });
