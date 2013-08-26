@@ -1,9 +1,8 @@
-var sqlbox = require('../../lib/sqlbox')
-  , User = require('./user')
-  , Post = require('./post');
+var sqlbox = require('../../lib/sqlbox');
 
 var Comment = sqlbox.create({
   name: 'comment',
+  namespace: 'test',
 
   columns: [
     {name: 'userId'},
@@ -12,8 +11,8 @@ var Comment = sqlbox.create({
   ],
 
   relations: [
-    {type: 'belongsTo', name: 'user', model: User},
-    {type: 'belongsTo', name: 'post', model: Post}
+    {type: 'belongsTo', name: 'user', model: 'user'},
+    {type: 'belongsTo', name: 'post', model: 'post'}
   ]
 });
 

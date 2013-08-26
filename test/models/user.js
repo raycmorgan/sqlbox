@@ -1,18 +1,17 @@
-var sqlbox = require('../../lib/sqlbox')
-  , Post = require('./post')
-  , Comment = require('./comment');
+var sqlbox = require('../../lib/sqlbox');
 
 var User = sqlbox.create({
   name: 'user',
+  namespace: 'test',
   
   columns: [
     {name: 'name'}
   ],
 
   relations: [
-    {type: 'hasMany', name: 'posts', foreignKey: 'authorId', model: Post},
-    {type: 'hasMany', name: 'editedPosts', foreignKey: 'editorId', model: Post},
-    {type: 'hasMany', name: 'comments', model: Comment}
+    {type: 'hasMany', name: 'posts', foreignKey: 'authorId', model: 'post'},
+    {type: 'hasMany', name: 'editedPosts', foreignKey: 'editorId', model: 'post'},
+    {type: 'hasMany', name: 'comments', model: 'comment'}
   ]
 });
 

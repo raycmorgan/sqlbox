@@ -29,6 +29,7 @@ describe('Relations', function () {
       userId = user.id;
 
       Post.save({authorId: userId, title: 'Post 1: Howdy'}, noop);
+      Post.save({authorId: 1, title: 'Another post'}, noop);
       Post.save({authorId: userId, editorId: userId, title: 'Post 2: Hello World'}, function (err, post) {
         if (err) { return done(); }
 
@@ -45,12 +46,38 @@ describe('Relations', function () {
   });
 
   describe('#get', function () {
-    it('should be able to fetch a user with their posts', function (done) {
-      User.get(userId, {includes: {'posts': 'comments'}}, function (err, user) {
-        // console.log(user);
+    it('should be able to fetch a user with their posts and comments (hasMany)', function (done) {
+      User.get(userId, {includes: ['comments', {'posts': 'comments'}]}, function (err, user) {
+        if (err) console.log(err);
         expect(user.id).to.be(userId);
         expect(user.posts).to.be.an('array');
+        expect(user.posts.length).to.be(2);
 
+        done();
+      });
+    });
+
+    it('should be able to fetch a user with their posts and comments (hasMany)', function (done) {
+      User.mget([userId, 1], {includes: ['comments', {'posts': 'comments'}]}, function (err, users) {
+        if (err) console.log(err);
+
+        expect(users.length).to.be(2);
+        expect(users[0].id).to.be(userId);
+        expect(users[1].id).to.be(1);
+
+        expect(users[0].posts.length).to.be(2);
+        expect(users[1].posts.length).to.be(1);
+
+        expect(users[1].comments.length).to.be(1);
+
+        done();
+      });
+    });
+
+    it('should be able to fetch a post and its author', function (done) {
+      Post.get(1, {includes: {'author': 'posts'}}, function (err, post) {
+        if (err) console.log(err);
+        expect(post.author.id).to.be(userId);
         done();
       });
     });

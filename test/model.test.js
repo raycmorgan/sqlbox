@@ -13,7 +13,7 @@ var Person = sqlbox.create({
     {name: 'hashedPassword', type: 'string'}
   ],
 
-  // logQueries: true
+  // logQueries: true,
   // validate: function (person, v) {
   //   v.check(person.age, 'Age must be provided').isInt();
   // },

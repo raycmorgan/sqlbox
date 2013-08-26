@@ -11,8 +11,7 @@ function createPeopleTable(pg, callback) {
     'accountId INTEGER,' +
     'hashed_password TEXT,' +
     'created_at TIMESTAMP DEFAULT current_timestamp,' +
-    'updated_at TIMESTAMP DEFAULT current_timestamp,' +
-    'revision INTEGER DEFAULT 1' +
+    'updated_at TIMESTAMP DEFAULT current_timestamp' +
   ');', callback);
 }
 
@@ -31,28 +30,26 @@ function createModelTables(pg, callback) {
 
 function dropModelTables(pg, callback) {
   pg.query(
-    'DROP TABLE IF EXISTS users;' +
-    'DROP TABLE IF EXISTS posts;' +
-    'DROP TABLE IF EXISTS comments;'
+    'DROP TABLE IF EXISTS test_users;' +
+    'DROP TABLE IF EXISTS test_posts;' +
+    'DROP TABLE IF EXISTS test_comments;'
   , callback);
 }
 
 function createUserTable(pg, callback) {
-  pg.query('CREATE TEMP TABLE users (' +
+  pg.query('CREATE TEMP TABLE test_users (' +
     'id SERIAL PRIMARY KEY,' +
     'created_at TIMESTAMP DEFAULT current_timestamp,' +
     'updated_at TIMESTAMP DEFAULT current_timestamp,' +
-    'revision INTEGER DEFAULT 1,' +
     'name TEXT' +
   ');', callback);
 }
 
 function createPostTable(pg, callback) {
-  pg.query('CREATE TEMP TABLE posts (' +
+  pg.query('CREATE TEMP TABLE test_posts (' +
     'id SERIAL PRIMARY KEY,' +
     'created_at TIMESTAMP DEFAULT current_timestamp,' +
     'updated_at TIMESTAMP DEFAULT current_timestamp,' +
-    'revision INTEGER DEFAULT 1,' +
     'title TEXT,' +
     'author_id INTEGER,' +
     'editor_id INTEGER' +
@@ -60,11 +57,10 @@ function createPostTable(pg, callback) {
 }
 
 function createCommentTable(pg, callback) {
-  pg.query('CREATE TEMP TABLE comments (' +
+  pg.query('CREATE TEMP TABLE test_comments (' +
     'id SERIAL PRIMARY KEY,' +
     'created_at TIMESTAMP DEFAULT current_timestamp,' +
     'updated_at TIMESTAMP DEFAULT current_timestamp,' +
-    'revision INTEGER DEFAULT 1,' +
     'content TEXT,' +
     'user_id INTEGER,' +
     'post_id INTEGER' +
