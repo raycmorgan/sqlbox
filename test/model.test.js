@@ -172,6 +172,18 @@ describe('sqlbox model', function () {
         done();
       });
     });
+
+    it('should return a 409 when unique index fails', function (done) {
+      Person.save({name: 'Jim', age: 25, password: 'foo'}, function (err, person) {
+        expect(err).to.be(null);
+
+        Person.save({name: 'Jim', age: 26, password: 'foo'}, function (err, person) {
+          expect(err.code).to.be(409);
+          expect(err.conflicts).to.be.an('array');
+          done();
+        });
+      });
+    });
   }); // #save on a new object
 
   describe('#save on an existing object', function () {

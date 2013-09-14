@@ -1,7 +1,7 @@
 function createPeopleTable(pg, callback) {
   pg.query('CREATE TEMP TABLE sqlbox_test_people (' +
     'id SERIAL PRIMARY KEY,' +
-    'name TEXT,' +
+    'name TEXT UNIQUE,' +
     'age INTEGER,' +
     'accountId INTEGER,' +
     'hashed_password TEXT,' +
