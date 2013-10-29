@@ -13,7 +13,7 @@ var Person = sqlbox.create({
     {name: 'hashedPassword', type: 'string'}
   ],
 
-  // logQueries: true
+  // logQueries: true,
   // validate: function (person, v) {
   //   v.check(person.age, 'Age must be provided').isInt();
   // },
@@ -75,7 +75,7 @@ describe('sqlbox model', function () {
 
   describe('#get', function () {
     beforeEach(function (done) {
-      Person.save({name: 'Jim', age: 25}, done);
+      Person.save({name: 'Jim', age: 25, accountId: 0}, done);
     });
 
     it('should return an existing row', function (done) {
@@ -83,6 +83,15 @@ describe('sqlbox model', function () {
         expect(err).to.be(null);
         expect(res).to.be.an('object');
         expect(res.id).to.be(1);
+        done();
+      });
+    });
+
+    it('should return columns with falsey values correctly', function (done) {
+      Person.get(1, function (err, res) {
+        expect(err).to.be(null);
+        expect(res).to.be.an('object');
+        expect(res.accountId).to.be(0);
         done();
       });
     });

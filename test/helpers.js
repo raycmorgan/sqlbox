@@ -3,7 +3,7 @@ function createPeopleTable(pg, callback) {
     'id SERIAL PRIMARY KEY,' +
     'name TEXT UNIQUE,' +
     'age INTEGER,' +
-    'accountId INTEGER,' +
+    'account_id INTEGER,' +
     'hashed_password TEXT,' +
     'created_at TIMESTAMP DEFAULT current_timestamp,' +
     'updated_at TIMESTAMP DEFAULT current_timestamp,' +
