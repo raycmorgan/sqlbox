@@ -28,6 +28,13 @@ var Person = sqlbox.create({
         person.hashedPassword = 'bar';
       }
       next();
+    },
+
+    afterFetch: function (person, next) {
+      if (person.age) {
+        person.nextAge = person.age + 1;
+      }
+      next();
     }
   }
 });
@@ -62,14 +69,25 @@ describe('sqlbox model', function () {
   });
 
   describe('#build', function () {
-    it('should remove extra properties', function () {
-      var person = Person.build({name: 'Jim', company: 'Example, Inc'});
-      expect(person).to.eql({name: 'Jim'});
+    it('should remove extra properties', function (done) {
+      Person.build({name: 'Jim', company: 'Example, Inc'}, function (err, person) {
+        expect(person).to.eql({name: 'Jim'});
+        done();
+      });
     });
 
-    it('should convert source columns to name keys', function () {
-      var person = Person.build({created_at: 1});
-      expect(person.createdAt).to.be(1);
+    it('should convert source columns to name keys', function (done) {
+      Person.build({created_at: 1}, function (err, person) {
+        expect(person.createdAt).to.be(1);
+        done();
+      });
+    });
+
+    it('should run the afterFetch hook', function (done) {
+      Person.build({age: 27, created_at: 1}, function (err, person) {
+        expect(person.nextAge).to.be(28);
+        done();
+      });
     });
   }); // #build
 
