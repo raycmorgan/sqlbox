@@ -114,6 +114,16 @@ describe('sqlbox model', function () {
       });
     });
 
+    it('should accept a query object in addition to an id', function (done) {
+      Person.get({accoundId: 0}, function (err, res) {
+        expect(err).to.be(null);
+        expect(res).to.be.an('object');
+        expect(res.name).to.be('Jim');
+        expect(res.age).to.be(25);
+        done();
+      });
+    })
+
     it('should return an error for non existing row', function (done) {
       Person.get(1000, function (err, res) {
         expect(err).to.be.an(Error);
