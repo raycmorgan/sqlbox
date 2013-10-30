@@ -198,6 +198,7 @@ Hooks let you specify custom logic when certain things have happened. The curren
 * `afterSave` — Called after both creates and updates
 * `afterUpdate`
 * `afterCreate`
+* `afterFetch` – Called after a row or rows are returned from the database
 
 ```javascript
 var User = sqlbox.create({
