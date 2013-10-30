@@ -277,7 +277,7 @@ User.all({age: 25}, function (err, users) {
 If you want to limit or skip rows, you can specify that option.
 
 ```javascript
-User.all({age: 25}, {limit: 10, skip:10}, function (err, users) {
+User.all({age: 25}, {limit: 10, offset:10}, function (err, users) {
   // ...
 });
 ```
