@@ -12,7 +12,7 @@ SQLBox is not your typical ORM library like Sequelize or Mongoose, etc. It takes
 
 # State
 
-* Only Postgres is currently supported. Internally uses node-sql to generate queries, so it will be very little work to get MySQL and SQLite working.
+* Currently Postgres and MySQL are supported. SQLite3 support is planned in the near-ish future.
 * Biggest missing feature is relations. This will be implemented in the near future and documented. For now, a little [async](https://github.com/caolan/async) will go a long way in fetching related data.
 * It is stable and safe to use data wise. The APIs might change a bit as features are added/removed/changed.
 * Delete is missing, whoops. That will be added shortly.
@@ -54,6 +54,12 @@ SQLBox is not your typical ORM library like Sequelize or Mongoose, etc. It takes
 $ npm install sqlbox
 ```
 
+In addition to sqlbox, you will also need to install the any-db adapter for your database.
+
+```bash
+$ npm install any-db-<postgres|mysql>
+```
+
 ### Create database client
 
 Before anything, you must configure the database client.
@@ -61,12 +67,14 @@ Before anything, you must configure the database client.
 ```javascript
 var sqlbox = require('sqlbox');
 
-sqlbox.createClient(function (pg) {
-  return new pg.Client('postgres://localhost/database_name');
+sqlbox.createClient({
+  dbURL: 'postgres://username:password@localhost/database_name', // required
+  poolMin: 2,   // optional Minimum number of clients in the pool
+  poolMax: 10   // optional Maximum number of clients in the pool
 });
 ```
 
-As noted above, only Postgres is currently supported. Sorry, others soonish.
+As noted above, both Postgres and MySQL are currently supported. SQLite3 soonish.
 
 ## Configuring a model
 
