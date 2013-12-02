@@ -33,12 +33,10 @@ var Person = sqlbox.create({
 });
 
 describe('sqlbox model without client', function () {
-  it('should throw a 500 error', function () {
+  it('should throw a error', function () {
     expect(function () {
       Person.get(1, function () {});
-    }).to.throwException(function (err) {
-      expect(err.code).to.be(500);
-    });
+    }).to.throwException();
   });
 });
 

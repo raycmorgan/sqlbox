@@ -53,6 +53,8 @@ describe('Relations', function () {
         expect(user.posts).to.be.an('array');
         expect(user.posts.length).to.be(2);
 
+        expect(user.posts[0].authorId).to.be(userId);
+
         done();
       });
     });
