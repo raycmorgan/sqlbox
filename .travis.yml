@@ -1,7 +1,10 @@
 language: node_js
 node_js:
   - "0.10"
-services: postgres
+services: 
+  - postgres
+  - mysql
 before_script:
   - psql -c 'create database sqlbox_test;' -U postgres
-env: DATABASE_USER=postgres DATABASE_NAME=sqlbox_test
+  - mysql -e 'create database sqlbox_test;'
+env: POSTGRES_USER=postgres MYSQL_USER=travis DATABASE_NAME=sqlbox_test
