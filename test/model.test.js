@@ -1,43 +1,7 @@
 var expect = require('expect.js')
   , helpers = require('./helpers')
-  , sqlbox = require('../lib/sqlbox');
-
-var Person = sqlbox.create({
-  name: 'person',
-  namespace: 'sqlboxTest',
-
-  columns: [
-    {name: 'name', type: 'string'},
-    {name: 'age', type: 'integer'},
-    {name: 'accountId', type: 'integer'},
-    {name: 'hashedPassword', type: 'string'}
-  ],
-
-  // logQueries: true,
-  // validate: function (person, v) {
-  //   v.check(person.age, 'Age must be provided').isInt();
-  // },
-
-  validations: {
-    age: ['isInt', 'notNull']
-  },
-
-  hooks: {
-    beforeValidation: function (person, next) {
-      if (person.password === 'foo') {
-        person.hashedPassword = 'bar';
-      }
-      next();
-    },
-
-    afterFetch: function (person, next) {
-      if (person.age) {
-        person.nextAge = person.age + 1;
-      }
-      next();
-    }
-  }
-});
+  , sqlbox = require('../lib/sqlbox')
+  , Person = require('./models/person');
 
 describe('sqlbox model without client', function () {
   it('should throw a 500 error', function () {
