@@ -15,7 +15,6 @@ SQLBox is not your typical ORM library like Sequelize or Mongoose, etc. It takes
 * Currently Postgres and MySQL are supported. SQLite3 support is planned in the near-ish future.
 * Biggest missing feature is relations. This will be implemented in the near future and documented. For now, a little [async](https://github.com/caolan/async) will go a long way in fetching related data.
 * It is stable and safe to use data wise. The APIs might change a bit as features are added/removed/changed.
-* Delete is missing, whoops. That will be added shortly.
 
 # Table of contents
 
@@ -40,6 +39,7 @@ SQLBox is not your typical ORM library like Sequelize or Mongoose, etc. It takes
         * [Open ended queries](#open-ended-queries)
             * [query](#query)
             * [client](#client)
+        * [Deleting records](#deleting-records)
     * [Complete example](#complete-example)
     * [Errors](#errors)
 * [Housekeeping](#housekeeping)
@@ -476,6 +476,16 @@ User.save({name: 'Jim', age: '25'}, function (err, user) {
 
     console.log(fetchedUser);
   });
+});
+```
+
+### Deleting records
+
+You can delete a record by its id. In the callback you will be passed a potential error and a boolean indicating whether or not the record was removed.
+
+```javascript
+User.remove(1, function (err, success) {
+  // ...
 });
 ```
 
