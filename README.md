@@ -283,6 +283,20 @@ User.all({age: 25}, function (err, users) {
 });
 ```
 
+##### Selecting columns
+
+To select only specific columns to return from the query, use the `select` option.
+
+```javascript
+User.all({age: 25}, {select: ['name']}, function (err, users) {
+  // only name column will be returned
+});
+```
+
+Note: no columns are automatically returned, including the 'id' column. Because of this fact, the objects returned from the previous query should not be saved, else duplicates will be created since they have no ids, thus are new records. However, the good news is that if you select the id along with other columns, you can update the partial records and only the changed columns will be updated in the database.
+
+##### Limiting and skipping
+
 If you want to limit or skip rows, you can specify that option.
 
 ```javascript
@@ -290,6 +304,8 @@ User.all({age: 25}, {limit: 10, offset:10}, function (err, users) {
   // ...
 });
 ```
+
+##### Sorting
 
 To sort the rows, you supply an `order` option with the keys and direction to sort that key. Note that the order the keys appear in the object will be the order they are passed to the database.
 

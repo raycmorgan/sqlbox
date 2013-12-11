@@ -455,6 +455,15 @@ function describeModel(driver) {
           done();
         });
       });
+
+      it('should be able to select columns', function (done) {
+        Person.all({age: 32}, {select: ['name']}, function (err, people) {
+          expect(err).to.be(null);
+          expect(people[0].name).to.be('Tom');
+          expect(people[0].id).to.be(undefined);
+          done();
+        });
+      });
     }); // #all
 
     describe('#query', function () {
