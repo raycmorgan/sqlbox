@@ -291,33 +291,17 @@ User.all({age: 25}, {limit: 10, offset:10}, function (err, users) {
 });
 ```
 
-Sorting the rows is a bit awkward at the moment, but it is flexible and simple enough. You specify a order function that takes a [node-sql](https://github.com/brianc/node-sql) table definition.
+To sort the rows, you supply an `order` option with the keys and direction to sort that key. Note that the order the keys appear in the object will be the order they are passed to the database.
 
 ```javascript
-function nameDesc(t) {
-  return t.name.desc;
-}
-
-User.all({age: 25}, {order: nameDesc}, function (err, users) {
+User.all({age: 25}, {order: {name: 'desc'}}, function (err, users) {
   // ...
 });
-```
 
-Other order examples:
-
-```javascript
-// ORDER BY name
-t.name
-t.name.asc
-
-// ORDER BY name DESC
-t.name.desc;
-
-// ORDER BY name, id DESC
-[t.name, t.id.desc]
-
-// ORDER BY name IS NULL
-t.name.isNull()
+var order = {name: 'desc', location: 'asc'};
+User.all({age: 25}, {order: order}, function (err, users) {
+  // ...
+});
 ```
 
 ##### Operators in queries

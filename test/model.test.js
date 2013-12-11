@@ -448,11 +448,7 @@ function describeModel(driver) {
       });
 
       it('should be able to be sorted', function (done) {
-        var idDesc = function (t) {
-          return t.id.desc;
-        }
-
-        Person.all({age: 32}, {order: idDesc}, function (err, people) {
+        Person.all({age: 32}, {order: {id: 'desc'}}, function (err, people) {
           expect(err).to.be(null);
           expect(people[0].name).to.be('Frank');
           expect(people[1].name).to.be('Tom');
