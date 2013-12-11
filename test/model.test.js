@@ -121,7 +121,7 @@ function describeModel(driver) {
 
       it('should return multiple existing rows', function (done) {
         Person.mget([1, 2], function (err, res) {
-          expect(err).to.be(null);
+          expect(err).to.not.be.ok();
           expect(res).to.be.an('array');
           expect(res.length).to.be(2);
           done();
@@ -130,7 +130,7 @@ function describeModel(driver) {
 
       it('should return empty array when nothing is found', function (done) {
         Person.mget([1000, 1001], function (err, res) {
-          expect(err).to.be(null);
+          expect(err).to.not.be.ok();
           expect(res).to.be.an('array');
           expect(res.length).to.be(0);
           done();
@@ -139,7 +139,7 @@ function describeModel(driver) {
 
       it('should return partial array when some rows are found', function (done) {
         Person.mget([1, 1000], function (err, res) {
-          expect(err).to.be(null);
+          expect(err).to.not.be.ok();
           expect(res).to.be.an('array');
           expect(res.length).to.be(1);
           done();
@@ -157,7 +157,7 @@ function describeModel(driver) {
     describe('#save on a new object', function () {
       it('should save proper object', function (done) {
         Person.save({name: 'Jim', age: 25}, function (err, person) {
-          expect(err).to.be(null);
+          expect(err).to.not.be.ok();
           expect(person).to.be.an('object');
           expect(person.id).to.be.a('number');
           done();
@@ -183,7 +183,7 @@ function describeModel(driver) {
 
       it('should run the beforeSave hook', function (done) {
         Person.save({name: 'Jim', age: 25, password: 'foo'}, function (err, person) {
-          expect(err).to.be(null);
+          expect(err).to.not.be.ok();
           expect(person.hashedPassword).to.be('bar');
           expect(person.password).to.be(undefined);
           done();
@@ -192,7 +192,7 @@ function describeModel(driver) {
 
       it('should return a 409 when unique index fails', function (done) {
         Person.save({name: 'Jim', age: 25, password: 'foo'}, function (err, person) {
-          expect(err).to.be(null);
+          expect(err).to.not.be.ok();
 
           Person.save({name: 'Jim', age: 26, password: 'foo'}, function (err, person) {
             expect(err.code).to.be(409);
@@ -221,7 +221,7 @@ function describeModel(driver) {
         person.age = 26;
 
         Person.save(person, function (err, updatedPerson) {
-          expect(err).to.be(null);
+          expect(err).to.not.be.ok();
           expect(updatedPerson).to.be.an('object');
           expect(updatedPerson.id).to.equal(person.id);
           expect(updatedPerson.age).to.equal(26);
@@ -241,7 +241,7 @@ function describeModel(driver) {
 
       it('should not perform update if no changes', function (done) {
         Person.save(person, function (err, updatedPerson) {
-          expect(err).to.be(null);
+          expect(err).to.not.be.ok();
           expect(updatedPerson).to.eql(person);
           done();
         });
@@ -264,7 +264,7 @@ function describeModel(driver) {
 
       it('should be able to remove a row', function (done) {
         Person.remove(person.id, function (err, result) {
-          expect(err).to.be(null);
+          expect(err).to.not.be.ok();
           expect(result).to.be(true);
           done();
         });
@@ -391,7 +391,7 @@ function describeModel(driver) {
 
       it('should find people that match a single field', function (done) {
         Person.all({age: 32}, function (err, people) {
-          expect(err).to.be(null);
+          expect(err).to.not.be.ok();
           expect(people.length).to.be(2);
           done();
         });
@@ -399,7 +399,7 @@ function describeModel(driver) {
 
       it('should find people that match multiple fields', function (done) {
         Person.all({age: 25, name: 'Jim'}, function (err, people) {
-          expect(err).to.be(null);
+          expect(err).to.not.be.ok();
           expect(people.length).to.be(1);
           expect(people[0]).to.eql(savedPerson);
           done();
@@ -408,7 +408,7 @@ function describeModel(driver) {
 
       it('should find people with age greater than 30', function (done) {
         Person.all({age: {gt: 30}}, function (err, people) {
-          expect(err).to.be(null);
+          expect(err).to.not.be.ok();
           expect(people[0].name).to.be('Tom');
           expect(people[1].name).to.be('Frank');
           done();
@@ -417,7 +417,7 @@ function describeModel(driver) {
 
       it('should find people with age greater than 20, less than 32', function (done) {
         Person.all({age: {gt: 20, lt: 32}}, function (err, people) {
-          expect(err).to.be(null);
+          expect(err).to.not.be.ok();
           expect(people[0].name).to.be('Jim');
           done();
         });
@@ -425,7 +425,7 @@ function describeModel(driver) {
 
       it('should find people with name not null', function (done) {
         Person.all({age: {not: null}}, function (err, people) {
-          expect(err).to.be(null);
+          expect(err).to.not.be.ok();
           expect(people.length).to.be(3);
           done();
         });
@@ -433,7 +433,7 @@ function describeModel(driver) {
 
       it('should find people with names in an array', function (done) {
         Person.all({name: {in: ['Tom', 'Jim']}}, function (err, people) {
-          expect(err).to.be(null);
+          expect(err).to.not.be.ok();
           expect(people.length).to.be(2);
           done();
         });
@@ -441,7 +441,7 @@ function describeModel(driver) {
 
       it('should pass an empty array when nothing found', function (done) {
         Person.all({age: 40}, function (err, people) {
-          expect(err).to.be(null);
+          expect(err).to.not.be.ok();
           expect(people.length).to.be(0);
           done();
         });
@@ -449,7 +449,7 @@ function describeModel(driver) {
 
       it('should be able to be sorted', function (done) {
         Person.all({age: 32}, {order: {id: 'desc'}}, function (err, people) {
-          expect(err).to.be(null);
+          expect(err).to.not.be.ok();
           expect(people[0].name).to.be('Frank');
           expect(people[1].name).to.be('Tom');
           done();
@@ -458,7 +458,7 @@ function describeModel(driver) {
 
       it('should be able to select columns', function (done) {
         Person.all({age: 32}, {select: ['name']}, function (err, people) {
-          expect(err).to.be(null);
+          expect(err).to.not.be.ok();
           expect(people[0].name).to.be('Tom');
           expect(people[0].id).to.be(undefined);
           done();
@@ -477,7 +477,7 @@ function describeModel(driver) {
         Person.query(function (t) {
           return t.where({age: 32});
         }, function (err, people) {
-          expect(err).to.be(null);
+          expect(err).to.not.be.ok();
           expect(people.length).to.be(2);
           done();
         });
