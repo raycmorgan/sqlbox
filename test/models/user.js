@@ -11,7 +11,7 @@ var User = sqlbox.create({
   relations: [
     {type: 'hasMany', name: 'posts', foreignKey: 'authorId', model: 'post'},
     {type: 'hasMany', name: 'editedPosts', foreignKey: 'editorId', model: 'post'},
-    {type: 'hasMany', name: 'comments', model: 'comment'}
+    {type: 'hasMany', name: 'comments', model: 'comment', foreignKey: 'userId'}
   ]
 });
 

@@ -11,9 +11,9 @@ var Post = sqlbox.create({
   ],
 
   relations: [
-    {type: 'belongsTo', name: 'author', model: 'user'},
-    {type: 'belongsTo', name: 'editor', model: 'user'},
-    {type: 'hasMany', name: 'comments', model: 'comment'}
+    {type: 'belongsTo', name: 'author', model: 'user', foreignKey: 'authorId'},
+    {type: 'belongsTo', name: 'editor', model: 'user', foreignKey: 'editorId'},
+    {type: 'hasMany', name: 'comments', model: 'comment', foreignKey: 'postId'}
   ]
 });
 

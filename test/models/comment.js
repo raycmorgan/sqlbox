@@ -11,8 +11,8 @@ var Comment = sqlbox.create({
   ],
 
   relations: [
-    {type: 'belongsTo', name: 'user', model: 'user'},
-    {type: 'belongsTo', name: 'post', model: 'post'}
+    {type: 'belongsTo', name: 'user', model: 'user', foreignKey: 'userId'},
+    {type: 'belongsTo', name: 'post', model: 'post', foreignKey: 'postId'}
   ]
 });
 
