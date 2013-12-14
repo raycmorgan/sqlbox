@@ -19,6 +19,8 @@ var Person = sqlbox.create({
     age: ['isInt', 'notNull']
   },
 
+  // logQueries: true,
+
   hooks: {
     beforeValidation: function (person, next) {
       if (person.password === 'foo') {

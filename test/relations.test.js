@@ -49,7 +49,7 @@ describe.only('Relations', function () {
 
   describe('#get', function () {
     it('should be able to fetch a post and its author', function (done) {
-      Post.get(1, {includes: 'author'}, function (err, post) {
+      Post.get(1, {include: [{'comments': 'user'}, {author: {posts: 'editor'}}]}, function (err, post) {
         if (err) console.log(err);
         expect(post.author.id).to.be(userId);
         done();
