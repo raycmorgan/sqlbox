@@ -20,6 +20,8 @@ function dropPeopleTable(client, callback) {
 
 function createModelTables(pg, callback) {
   async.series([
+    createOrganizationTable.bind({}, pg),
+    createAccountTable.bind({}, pg),
     createUserTable.bind({}, pg),
     createPostTable.bind({}, pg),
     createCommentTable.bind({}, pg),
@@ -29,6 +31,8 @@ function createModelTables(pg, callback) {
 
 function dropModelTables(pg, callback) {
   pg.query(
+    'DROP TABLE IF EXISTS test_organizations;' +
+    'DROP TABLE IF EXISTS test_accounts;' +
     'DROP TABLE IF EXISTS test_users;' +
     'DROP TABLE IF EXISTS test_posts;' +
     'DROP TABLE IF EXISTS test_comments;' +
@@ -36,20 +40,40 @@ function dropModelTables(pg, callback) {
   , callback);
 }
 
+function createOrganizationTable(pg, callback) {
+  pg.query('CREATE TEMPORARY TABLE test_organizations (' +
+    'id SERIAL PRIMARY KEY,' +
+    'created_at TIMESTAMP,' +
+    'updated_at TIMESTAMP,' +
+    'name TEXT' +
+  ');', callback);
+}
+
+function createAccountTable(pg, callback) {
+  pg.query('CREATE TEMPORARY TABLE test_accounts (' +
+    'id SERIAL PRIMARY KEY,' +
+    'created_at TIMESTAMP,' +
+    'updated_at TIMESTAMP,' +
+    'name TEXT,' +
+    'organization_id INTEGER' +
+  ');', callback);
+}
+
 function createUserTable(pg, callback) {
   pg.query('CREATE TEMPORARY TABLE test_users (' +
     'id SERIAL PRIMARY KEY,' +
-    'created_at TIMESTAMP DEFAULT current_timestamp,' +
-    'updated_at TIMESTAMP DEFAULT current_timestamp,' +
-    'name TEXT' +
+    'created_at TIMESTAMP,' +
+    'updated_at TIMESTAMP,' +
+    'name TEXT,' +
+    'organization_id INTEGER' +
   ');', callback);
 }
 
 function createPostTable(pg, callback) {
   pg.query('CREATE TEMPORARY TABLE test_posts (' +
     'id SERIAL PRIMARY KEY,' +
-    'created_at TIMESTAMP DEFAULT current_timestamp,' +
-    'updated_at TIMESTAMP DEFAULT current_timestamp,' +
+    'created_at TIMESTAMP,' +
+    'updated_at TIMESTAMP,' +
     'title TEXT,' +
     'author_id INTEGER,' +
     'editor_id INTEGER' +
@@ -59,8 +83,8 @@ function createPostTable(pg, callback) {
 function createCommentTable(pg, callback) {
   pg.query('CREATE TEMPORARY TABLE test_comments (' +
     'id SERIAL PRIMARY KEY,' +
-    'created_at TIMESTAMP DEFAULT current_timestamp,' +
-    'updated_at TIMESTAMP DEFAULT current_timestamp,' +
+    'created_at TIMESTAMP,' +
+    'updated_at TIMESTAMP,' +
     'content TEXT,' +
     'user_id INTEGER,' +
     'post_id INTEGER' +

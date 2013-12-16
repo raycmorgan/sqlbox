@@ -5,13 +5,15 @@ var User = sqlbox.create({
   namespace: 'test',
   
   columns: [
-    {name: 'name'}
+    {name: 'name'},
+    {name: 'organizationId'}
   ],
 
   relations: [
     {type: 'hasMany', name: 'posts', foreignKey: 'authorId', model: 'post'},
     {type: 'hasMany', name: 'editedPosts', foreignKey: 'editorId', model: 'post'},
-    {type: 'hasMany', name: 'comments', model: 'comment'}
+    {type: 'hasMany', name: 'comments', model: 'comment'},
+    {type: 'belongsTo', name: 'organization', model: 'organization'}
   ]
 });
 

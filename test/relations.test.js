@@ -5,7 +5,9 @@ var expect = require('expect.js')
 
 var User = require('./models/user')
   , Post = require('./models/post')
-  , Comment = require('./models/comment');
+  , Account = require('./models/account')
+  , Comment = require('./models/comment')
+  , Organization = require('./models/organization');
 
 function noop() {};
 
@@ -16,7 +18,7 @@ function describeModel(driver) {
 
   describe('Relations', function () {
 
-    var userId, postId;
+    var userId, postId, organizationId;
     var dbURL, dbUser;
 
     if ('Postgres' === driver) {
@@ -40,21 +42,28 @@ function describeModel(driver) {
 
       helpers.createModelTables(sqlbox.clients.default, noop);
 
-      User.save({name: 'Tim'}, noop);
-      User.save({name: 'John'}, noop);
-      User.save({name: 'Frank'}, function (err, user) {
+      Organization.save({ name: 'SQLbox Corporation, Inc. LLC' }, function (err, org) {
         if (err) { return done(err); }
+        organizationId = org.id;
 
-        userId = user.id;
+        Account.save({name: 'Fancy Corp.', organizationId: organizationId}, noop);
 
-        Post.save({authorId: userId, title: 'Post 1: Howdy'}, noop);
-        Post.save({authorId: 1, title: 'Another post'}, noop);
-        Post.save({authorId: userId, editorId: userId, title: 'Post 2: Hello World'}, function (err, post) {
-          if (err) { return done(); }
+        User.save({name: 'Tim'}, noop);
+        User.save({name: 'John'}, noop);
+        User.save({name: 'Frank', organizationId: organizationId}, function (err, user) {
+          if (err) { return done(err); }
 
-          postId = post.id;
+          userId = user.id;
 
-          Comment.save({userId: 1, postId: post.id, content: 'Comment 1: Hmm...'}, done);
+          Post.save({authorId: userId, title: 'Post 1: Howdy'}, noop);
+          Post.save({authorId: 1, title: 'Another post'}, noop);
+          Post.save({authorId: userId, editorId: userId, title: 'Post 2: Hello World'}, function (err, post) {
+            if (err) { return done(); }
+
+            postId = post.id;
+
+            Comment.save({userId: 1, postId: post.id, content: 'Comment 1: Hmm...'}, done);
+          });
         });
       });
     });
@@ -80,6 +89,24 @@ function describeModel(driver) {
           if (err) console.log(err);
           expect(user.id).to.be(userId);
           expect(user.posts).to.be.an('array');
+          done();
+        });
+      });
+
+      it('should be able to fetch an organization and its admin (hasOne)', function (done) {
+        Organization.get(organizationId, {include: 'admin'}, function (err, org) {
+          if (err) console.log(err);
+          expect(org.id).to.be(organizationId);
+          expect(org.admin).to.be.an('object');
+          done();
+        });
+      });
+
+      it('should be able to fetch an organization and its account (hasOne', function (done) {
+        Organization.get(organizationId, {include: 'account'}, function (err, org) {
+          if (err) console.log(err);
+          expect(org.id).to.be(organizationId);
+          expect(org.account).to.be.an('object');
           done();
         });
       });
