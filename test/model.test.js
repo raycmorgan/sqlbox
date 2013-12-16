@@ -8,7 +8,7 @@ describe('sqlbox model without client', function () {
     expect(function () {
       Person.get(1, function () {});
     }).to.throwException(function (err) {
-      expect(err.code).to.be(500);
+      expect(err).to.be.an(Error);
     });
   });
 });
