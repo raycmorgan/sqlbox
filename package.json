@@ -1,6 +1,6 @@
 {
   "name": "sqlbox",
-  "version": "0.4.0-beta",
+  "version": "0.4.0-beta.2",
   "description": "Simple non-joining, non-ORM SQL (Postgres, MySQL) database interface. Still Alpha.",
   "main": "./lib/sqlbox",
   "repository": {
