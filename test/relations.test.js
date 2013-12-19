@@ -145,7 +145,70 @@ function describeModel(driver) {
           done();
         });
       });
-    });
-  });
+    }); // end #get
+
+    describe('#all', function () {
+      it('should be able to fetch all posts and their authors', function (done) {
+        Post.all({}, {include: 'author'}, function (err, posts) {
+          if (err) console.log(err);
+
+          expect(posts).to.be.an('array');
+          posts.forEach(function (post) {
+            expect(post.author).to.not.be(undefined);
+            expect(post.author).to.be.an('object');
+          });
+
+          done();
+        });
+      });
+
+      it('should be able to fetch users -> (comments, posts -> comments)', function (done) {
+        User.all({}, {include: ['comments', {posts: 'comments'}]}, function (err, users) {
+          if (err) console.log(err);
+
+          expect(users).to.be.an('array');
+          users.forEach(function (user) {
+            expect(user.posts).to.be.an('array');
+            user.posts.forEach(function (post) {
+              expect(post.comments).to.be.an('array');
+            });
+          });
+
+          done();
+        });
+      });
+    }); // end #all
+
+    describe('#mget', function () {
+      it('should be able to fetch posts and their authors', function (done) {
+        Post.mget([1, 2], {include: 'author'}, function (err, posts) {
+          if (err) console.log(err);
+
+          expect(posts).to.be.an('array');
+          posts.forEach(function (post) {
+            expect(post.author).to.be.an('object');
+          });
+
+          done();
+        });
+      });
+
+      it('should be able to fetch author -> posts -> comments', function (done) {
+        User.mget([userId, 2, 1], {include: {posts: 'comments'}}, function (err, users) {
+          if (err) console.log(err);
+
+          users.forEach(function (user) {
+            expect(user.posts).to.be.an('array');
+            user.posts.forEach(function (post) {
+              expect(post.comments).to.be.an('array');
+            });
+          });
+
+          done();
+        });
+      });
+    }); // end #mget
+
+  }); // end Relations
 
 }
