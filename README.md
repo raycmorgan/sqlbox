@@ -13,7 +13,7 @@ SQLBox is not your typical ORM library like Sequelize or Mongoose, etc. It takes
 # State
 
 * Currently Postgres and MySQL are supported. SQLite3 support is planned in the near-ish future.
-* Biggest missing feature is relations. This will be implemented in the near future and documented. For now, a little [async](https://github.com/caolan/async) will go a long way in fetching related data.
+* Biggest missing feature is relations. They are mostly complete in the [0.4.0-beta branch](https://github.com/raycmorgan/sqlbox/tree/0.4.0-beta). For now, a little [async](https://github.com/caolan/async) will go a long way in fetching related data.
 * It is stable and safe to use data wise. The APIs might change a bit as features are added/removed/changed.
 
 # Table of contents
