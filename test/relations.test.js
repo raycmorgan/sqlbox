@@ -177,6 +177,14 @@ function describeModel(driver) {
           done();
         });
       });
+
+      it('should pass back an empty array if no top level records found', function (done) {
+        User.all({id: 1001}, {include: ['comments']}, function (err, users) {
+          expect(err).to.be(null);
+          expect(users).to.eql([]);
+          done();
+        });
+      });
     }); // end #all
 
     describe('#mget', function () {
