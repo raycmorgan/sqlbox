@@ -244,10 +244,14 @@ All hooks and the actual save are by default contained in a SQL transaction. Thi
 
 #### get
 
-Get a single row by id. If it is not found an error with code 404 will be passed back.
+Get a single row by id or query object. If it is not found an error with code 404 will be passed back.
 
 ```javascript
 User.get(1, function (err, user) {
+  // ...
+});
+
+User.get({username: 'raycmorgan'}, function (err, user) {
   // ...
 });
 ```
@@ -496,10 +500,14 @@ User.save({name: 'Jim', age: '25'}, function (err, user) {
 
 ### Deleting records
 
-You can delete a record by its id. In the callback you will be passed a potential error and a boolean indicating whether or not the record was removed.
+You can delete a record by its id or a query object. In the callback you will be passed a potential error and a boolean indicating whether or not the record was removed.
 
 ```javascript
 User.remove(1, function (err, success) {
+  // ...
+});
+
+User.remove({username: 'raycmorgan'}, function (err, success) {
   // ...
 });
 ```

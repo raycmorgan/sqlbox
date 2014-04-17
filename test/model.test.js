@@ -262,7 +262,7 @@ function describeModel(driver) {
         });
       });
 
-      it('should be able to remove a row', function (done) {
+      it('should be able to remove a row by id', function (done) {
         Person.remove(person.id, function (err, result) {
           expect(err).to.not.be.ok();
           expect(result).to.be(true);
@@ -270,8 +270,25 @@ function describeModel(driver) {
         });
       });
 
-      it('should return a 404 error when row not found', function (done) {
+      it('should be able to remove a row by query object', function (done) {
+        Person.remove({age: 25}, function (err, result) {
+          expect(err).to.not.be.ok();
+          expect(result).to.be(true);
+          done();
+        });
+      });
+
+      it('should return a 404 error when row not found by id', function (done) {
         Person.remove(person.id+1, function (err, result) {
+          expect(err).to.be.an(Error);
+          expect(err.code).to.be(404);
+          expect(result).to.be(undefined);
+          done();
+        });
+      });
+
+      it('should return a 404 error when row not found by query object', function (done) {
+        Person.remove({age: 900}, function (err, result) {
           expect(err).to.be.an(Error);
           expect(err.code).to.be(404);
           expect(result).to.be(undefined);
