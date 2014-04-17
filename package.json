@@ -15,14 +15,14 @@
     "pluralize": "0.0.5"
   },
   "peerDependencies": {
-    "any-db": "~1.0.0"
+    "any-db": "~2.1.0"
   },
   "devDependencies": {
     "nodemon": "~0.7.8",
     "mocha": "~1.12.0",
     "expect.js": "~0.2.0",
-    "any-db-postgres": "~1.0.0",
-    "any-db-mysql": "~1.0.0"
+    "any-db-postgres": "~2.1.1",
+    "any-db-mysql": "~2.1.1"
   },
   "scripts": {
     "test": "make test"
